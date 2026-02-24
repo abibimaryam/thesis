@@ -1,8 +1,21 @@
 import torch
 import torch.nn as nn
 
-
-
+    
+    # изначальное изображение (1, 28, 28)
+    # делится на патчи по 7x7 (28/7) 
+    # 4^2 = 16 
+    # [ 7x7 ][ 7x7 ][ 7x7 ][ 7x7 ]
+    # [ 7x7 ][ 7x7 ][ 7x7 ][ 7x7 ]
+    # [ 7x7 ][ 7x7 ][ 7x7 ][ 7x7 ]
+    # [ 7x7 ][ 7x7 ][ 7x7 ][ 7x7 ]
+    # 16 патчей
+    # каждый — вектор 128 из-за dim = 128 который мы выбрали
+    # добавляется специальный CLS-токен (ещё один вектор 128)
+    # теперь всего 17 токенов (16 патчей + 1 CLS)
+    # добавляются позиционные эмбеддинги
+    # чтобы модель понимала, где находится каждый патч
+    # Теперь размер становится:(B, 17, 128)
 class PatchEmbedding(nn.Module):
     def __init__(self, img_size, patch_size, in_channels, embed_dim, dropout=0.1):
         super().__init__()
@@ -20,6 +33,12 @@ class PatchEmbedding(nn.Module):
         x = x + self.pos_embed
         return self.dropout(x) 
 
+
+# последовательность из 17 токенов проходит через attention
+# каждый токен сравнивает себя со всеми остальными
+# вычисляется матрица внимания размером 17×17
+# каждый токен получает взвешенную сумму информации от других
+
 class Attention(nn.Module):
     def __init__(self, dim, heads, dropout=0.1):
         super().__init__()
@@ -30,15 +49,26 @@ class Attention(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.attn_dropout = nn.Dropout(dropout) 
 
+        self.last_attn = None
+        
+
     def forward(self, x):
+        # B — размер батча
+        # N = 17 — число токенов
+        # C = 128 — размер эмбеддинга
         B, N, C = x.shape
         qkv = self.to_qkv(x).chunk(3, dim=-1)
         q, k, v = map(lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2), qkv)
         attn = (q @ k.transpose(-2, -1)) * self.scale
         attn = attn.softmax(dim=-1)
+
+        self.last_attn = attn.detach()
+        
         attn = self.attn_dropout(attn) 
         out = (attn @ v).transpose(1, 2).reshape(B, N, C)
         return self.dropout(self.proj(out))
+
+
 
 class TransformerBlock(nn.Module):
     def __init__(self, dim, heads, mlp_dim, dropout=0.1):
@@ -46,6 +76,7 @@ class TransformerBlock(nn.Module):
         self.norm1 = nn.LayerNorm(dim)
         self.attn = Attention(dim, heads, dropout)
         self.norm2 = nn.LayerNorm(dim)
+        # MLP (Multi-Layer Perceptron)
         self.mlp = nn.Sequential(
             nn.Linear(dim, mlp_dim),
             nn.GELU(),
@@ -60,6 +91,8 @@ class TransformerBlock(nn.Module):
         return x
 
 class ViT(nn.Module):
+
+
     def __init__(self, img_size=28, patch_size=7, in_channels=1, num_classes=10, dim=128, depth=4, heads=8, mlp_dim=512, dropout=0.1):
         super().__init__()
         self.patch_embed = PatchEmbedding(img_size, patch_size, in_channels, dim, dropout)
