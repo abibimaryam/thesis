@@ -91,7 +91,7 @@ def main():
         test_accs.append(test_acc)
 
         log_file.write(
-            f"Epoch {epoch}: Train Acc: {train_acc:.4f}, Test Acc: {test_acc:.4f}\n"
+            f"Epoch {epoch +1 }: Train Acc: {train_acc:.4f}, Test Acc: {test_acc:.4f}\n"
         )
         log_file.write(
             f"Train loss: {train_loss:.4f}, Test loss: {test_loss:.4f}\n"
