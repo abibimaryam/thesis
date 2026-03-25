@@ -50,8 +50,8 @@ class Attention(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.attn_dropout = nn.Dropout(dropout) 
 
-        # обучаемый параметр
-        self.p_raw = nn.Parameter(torch.tensor(0.0))
+        # p для каждой головы
+        self.p_raw = nn.Parameter(torch.zeros(heads))
 
         self.last_attn = None
         
@@ -65,9 +65,9 @@ class Attention(nn.Module):
         q, k, v = map(lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2), qkv)
         attn = (q @ k.transpose(-2, -1)) * self.scale
 
-        # p = F.softplus(self.p_raw)
+        p = F.softplus(self.p_raw).view(1, self.heads, 1, 1)
 
-        attn = (torch.sign(attn) * (torch.abs(attn) ** self.p_raw)) / (N ** 0.5)
+        attn = (torch.sign(attn) * (torch.abs(attn) ** p)) / (N ** 0.5)
         # attn = (attn ** p) / (N ** 0.5)
 
         self.last_attn = attn.detach()
@@ -75,7 +75,8 @@ class Attention(nn.Module):
         attn = self.attn_dropout(attn) 
         out = (attn @ v).transpose(1, 2).reshape(B, N, C)
         return self.dropout(self.proj(out))
-
+    
+ 
 
 
 class TransformerBlock(nn.Module):

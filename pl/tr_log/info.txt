@@ -1,0 +1,5 @@
+Логи где p меняется от 1 ло бесконечности
+pl/tr_log/training_log_p_1.txt
+
+Логи где p меняется от 0 ло бесконечности
+pl/tr_log/training_log_p_0.txt
