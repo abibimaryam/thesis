@@ -67,7 +67,7 @@ class Attention(nn.Module):
 
         p = F.softplus(self.p_raw).view(1, self.heads, 1, 1)
 
-        attn = (torch.sign(attn) * (torch.abs(attn) ** p)) / (N ** 0.5)
+        attn = F.relu(attn) ** p / (N ** 0.5)
         # attn = (attn ** p) / (N ** 0.5)
 
         self.last_attn = attn.detach()

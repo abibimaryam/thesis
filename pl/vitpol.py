@@ -65,9 +65,9 @@ class Attention(nn.Module):
         q, k, v = map(lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2), qkv)
         attn = (q @ k.transpose(-2, -1)) * self.scale
 
-        # p = F.softplus(self.p_raw)
+        p = F.softplus(self.p_raw)
 
-        attn = (torch.sign(attn) * (torch.abs(attn) ** self.p_raw)) / (N ** 0.5)
+        attn = F.relu(attn) ** p / (N ** 0.5)
         # attn = (attn ** p) / (N ** 0.5)
 
         self.last_attn = attn.detach()
