@@ -38,7 +38,6 @@ class PatchEmbedding(nn.Module):
 # каждый токен сравнивает себя со всеми остальными
 # вычисляется матрица внимания размером 17×17
 # каждый токен получает взвешенную сумму информации от других
-
 class Attention(nn.Module):
     def __init__(self, dim, heads, dropout=0.1):
         super().__init__()
@@ -48,26 +47,32 @@ class Attention(nn.Module):
         self.proj = nn.Linear(dim, dim)
         self.dropout = nn.Dropout(dropout)
         self.attn_dropout = nn.Dropout(dropout) 
-
         self.last_attn = None
+
+    def manual_softmax(self, attn):
+        """Чистая реализация softmax без PyTorch магии"""
+        B, H, N, _ = attn.shape
         
+        exp_attn = torch.exp(attn)
+        
+        row_sums = exp_attn.sum(dim=-1, keepdim=True)  # ← синхронизация ядер!
+  
+        softmax_attn = exp_attn / row_sums
+        return softmax_attn
 
     def forward(self, x):
-        # B — размер батча
-        # N = 17 — число токенов
-        # C = 128 — размер эмбеддинга
         B, N, C = x.shape
         qkv = self.to_qkv(x).chunk(3, dim=-1)
         q, k, v = map(lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2), qkv)
         attn = (q @ k.transpose(-2, -1)) * self.scale
-        attn = attn.softmax(dim=-1)
-
-        self.last_attn = attn.detach()
         
+        # ручной softmax
+        attn = self.manual_softmax(attn)
+        
+        self.last_attn = attn.detach()
         attn = self.attn_dropout(attn) 
         out = (attn @ v).transpose(1, 2).reshape(B, N, C)
         return self.dropout(self.proj(out))
-
 
 
 class TransformerBlock(nn.Module):
