@@ -70,7 +70,7 @@ class Attention(nn.Module):
         attn = self.manual_softmax(attn)
         
         self.last_attn = attn.detach()
-        attn = self.attn_dropout(attn) 
+        # attn = self.attn_dropout(attn) 
         out = (attn @ v).transpose(1, 2).reshape(B, N, C)
         return self.dropout(self.proj(out))
 

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
     
     # изначальное изображение (1, 28, 28)
@@ -62,8 +63,13 @@ class Attention(nn.Module):
         qkv = self.to_qkv(x).chunk(3, dim=-1)
         q, k, v = map(lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2), qkv)
         attn = (q @ k.transpose(-2, -1)) * self.scale
-        
-        attn = (attn ** self.p) / (N ** 0.5)
+
+
+        # attn = F.relu(attn) ** self.p / (N ** 0.5)
+        # attn = (attn ** p) / (N ** 0.5)
+
+        attn = F.relu(attn)
+        attn = attn * attn / (N ** 0.5)
 
         self.last_attn = attn.detach()
         
