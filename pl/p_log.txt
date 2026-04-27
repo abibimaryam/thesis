@@ -1,4 +1,0 @@
-transformer.0.attn: 0.6537876725196838
-transformer.1.attn: 0.7192882895469666
-transformer.2.attn: 0.7042332291603088
-transformer.3.attn: 0.7440060973167419
