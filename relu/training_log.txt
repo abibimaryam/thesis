@@ -1,0 +1,57 @@
+Epoch 1/50 | Time: 50.49s | Train Acc: 0.2358, Test Acc: 0.3656 | Train Loss: 2.1150, Test Loss: 1.8066
+Epoch 2/50 | Time: 54.02s | Train Acc: 0.3439, Test Acc: 0.4469 | Train Loss: 1.8813, Test Loss: 1.6015
+Epoch 3/50 | Time: 55.80s | Train Acc: 0.3991, Test Acc: 0.4764 | Train Loss: 1.7407, Test Loss: 1.5220
+Epoch 4/50 | Time: 55.93s | Train Acc: 0.4343, Test Acc: 0.4882 | Train Loss: 1.6443, Test Loss: 1.5099
+Epoch 5/50 | Time: 56.29s | Train Acc: 0.4700, Test Acc: 0.5735 | Train Loss: 1.5559, Test Loss: 1.2802
+Epoch 6/50 | Time: 56.63s | Train Acc: 0.4992, Test Acc: 0.5824 | Train Loss: 1.4983, Test Loss: 1.2516
+Epoch 7/50 | Time: 56.41s | Train Acc: 0.5171, Test Acc: 0.6064 | Train Loss: 1.4309, Test Loss: 1.1856
+Epoch 8/50 | Time: 56.19s | Train Acc: 0.5324, Test Acc: 0.6163 | Train Loss: 1.3767, Test Loss: 1.1633
+Epoch 9/50 | Time: 56.20s | Train Acc: 0.5455, Test Acc: 0.6245 | Train Loss: 1.3317, Test Loss: 1.1228
+Epoch 10/50 | Time: 56.23s | Train Acc: 0.5642, Test Acc: 0.6013 | Train Loss: 1.2914, Test Loss: 1.1791
+Epoch 11/50 | Time: 56.54s | Train Acc: 0.5700, Test Acc: 0.6296 | Train Loss: 1.2874, Test Loss: 1.1165
+Epoch 12/50 | Time: 55.55s | Train Acc: 0.5880, Test Acc: 0.6642 | Train Loss: 1.2249, Test Loss: 1.0088
+Epoch 13/50 | Time: 55.99s | Train Acc: 0.6016, Test Acc: 0.6660 | Train Loss: 1.1843, Test Loss: 0.9898
+Epoch 14/50 | Time: 56.68s | Train Acc: 0.6153, Test Acc: 0.6764 | Train Loss: 1.1411, Test Loss: 1.0009
+Epoch 15/50 | Time: 55.75s | Train Acc: 0.6227, Test Acc: 0.6599 | Train Loss: 1.1153, Test Loss: 1.0251
+Epoch 16/50 | Time: 56.59s | Train Acc: 0.6259, Test Acc: 0.6871 | Train Loss: 1.1170, Test Loss: 0.9476
+Epoch 17/50 | Time: 56.33s | Train Acc: 0.6380, Test Acc: 0.6971 | Train Loss: 1.0688, Test Loss: 0.9282
+Epoch 18/50 | Time: 55.63s | Train Acc: 0.6397, Test Acc: 0.6754 | Train Loss: 1.0668, Test Loss: 0.9744
+Epoch 19/50 | Time: 56.41s | Train Acc: 0.6600, Test Acc: 0.7080 | Train Loss: 1.0354, Test Loss: 0.9154
+Epoch 20/50 | Time: 56.30s | Train Acc: 0.6625, Test Acc: 0.6920 | Train Loss: 1.0087, Test Loss: 0.9305
+Epoch 21/50 | Time: 55.87s | Train Acc: 0.6675, Test Acc: 0.6538 | Train Loss: 0.9963, Test Loss: 1.0445
+Epoch 22/50 | Time: 56.48s | Train Acc: 0.6628, Test Acc: 0.7231 | Train Loss: 1.0117, Test Loss: 0.8541
+Epoch 23/50 | Time: 56.69s | Train Acc: 0.6798, Test Acc: 0.7075 | Train Loss: 0.9580, Test Loss: 0.8900
+Epoch 24/50 | Time: 56.13s | Train Acc: 0.6919, Test Acc: 0.6953 | Train Loss: 0.9188, Test Loss: 0.9249
+Epoch 25/50 | Time: 56.22s | Train Acc: 0.7028, Test Acc: 0.7251 | Train Loss: 0.8884, Test Loss: 0.8397
+Epoch 26/50 | Time: 56.83s | Train Acc: 0.7076, Test Acc: 0.7144 | Train Loss: 0.8706, Test Loss: 0.8861
+Epoch 27/50 | Time: 56.09s | Train Acc: 0.7104, Test Acc: 0.7187 | Train Loss: 0.8707, Test Loss: 0.8605
+Epoch 28/50 | Time: 56.43s | Train Acc: 0.7184, Test Acc: 0.7386 | Train Loss: 0.8386, Test Loss: 0.8042
+Epoch 29/50 | Time: 55.84s | Train Acc: 0.7307, Test Acc: 0.7338 | Train Loss: 0.8139, Test Loss: 0.8310
+Epoch 30/50 | Time: 56.09s | Train Acc: 0.7291, Test Acc: 0.7394 | Train Loss: 0.7953, Test Loss: 0.8110
+Epoch 31/50 | Time: 56.03s | Train Acc: 0.7386, Test Acc: 0.7496 | Train Loss: 0.7800, Test Loss: 0.7800
+Epoch 32/50 | Time: 56.26s | Train Acc: 0.7451, Test Acc: 0.7348 | Train Loss: 0.7565, Test Loss: 0.8074
+Epoch 33/50 | Time: 55.91s | Train Acc: 0.7472, Test Acc: 0.7452 | Train Loss: 0.7497, Test Loss: 0.8034
+Epoch 34/50 | Time: 56.10s | Train Acc: 0.7620, Test Acc: 0.7506 | Train Loss: 0.7046, Test Loss: 0.7824
+Epoch 35/50 | Time: 56.56s | Train Acc: 0.7643, Test Acc: 0.7620 | Train Loss: 0.7050, Test Loss: 0.7576
+Epoch 36/50 | Time: 56.00s | Train Acc: 0.7730, Test Acc: 0.7603 | Train Loss: 0.6839, Test Loss: 0.7556
+Epoch 37/50 | Time: 55.48s | Train Acc: 0.7846, Test Acc: 0.7684 | Train Loss: 0.6537, Test Loss: 0.7466
+Epoch 38/50 | Time: 55.67s | Train Acc: 0.7828, Test Acc: 0.7585 | Train Loss: 0.6491, Test Loss: 0.7614
+Epoch 39/50 | Time: 55.78s | Train Acc: 0.7884, Test Acc: 0.7618 | Train Loss: 0.6332, Test Loss: 0.7568
+Epoch 40/50 | Time: 56.90s | Train Acc: 0.7943, Test Acc: 0.7666 | Train Loss: 0.6205, Test Loss: 0.7583
+Epoch 41/50 | Time: 55.85s | Train Acc: 0.7947, Test Acc: 0.7743 | Train Loss: 0.6140, Test Loss: 0.7306
+Epoch 42/50 | Time: 56.23s | Train Acc: 0.8041, Test Acc: 0.7697 | Train Loss: 0.5950, Test Loss: 0.7415
+Epoch 43/50 | Time: 56.10s | Train Acc: 0.8082, Test Acc: 0.7694 | Train Loss: 0.5828, Test Loss: 0.7465
+Epoch 44/50 | Time: 56.26s | Train Acc: 0.8055, Test Acc: 0.7704 | Train Loss: 0.5753, Test Loss: 0.7411
+Epoch 45/50 | Time: 56.85s | Train Acc: 0.8122, Test Acc: 0.7753 | Train Loss: 0.5736, Test Loss: 0.7276
+Epoch 46/50 | Time: 56.10s | Train Acc: 0.8080, Test Acc: 0.7750 | Train Loss: 0.5795, Test Loss: 0.7373
+Epoch 47/50 | Time: 56.20s | Train Acc: 0.8140, Test Acc: 0.7781 | Train Loss: 0.5623, Test Loss: 0.7358
+Epoch 48/50 | Time: 55.15s | Train Acc: 0.8201, Test Acc: 0.7773 | Train Loss: 0.5547, Test Loss: 0.7289
+Epoch 49/50 | Time: 55.90s | Train Acc: 0.8149, Test Acc: 0.7786 | Train Loss: 0.5638, Test Loss: 0.7280
+Epoch 50/50 | Time: 56.07s | Train Acc: 0.8197, Test Acc: 0.7781 | Train Loss: 0.5521, Test Loss: 0.7279
+
+==============================
+Training Complete!
+Total Time: 2800.01s (46.67 min)
+Average Time per Epoch: 56.00s
+Best Test Accuracy: 0.7786
+==============================
