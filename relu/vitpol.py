@@ -77,6 +77,46 @@ class PatchEmbedding(nn.Module):
 #         return self.dropout(self.proj(out))
 
 
+# class Attention(nn.Module):
+#     def __init__(self, dim, heads, dropout=0.1):
+#         super().__init__()
+#         self.heads = heads
+#         self.scale = (dim // heads) ** -0.5
+
+#         self.to_qkv = nn.Linear(dim, dim * 3, bias=False)
+#         self.proj = nn.Linear(dim, dim)
+
+#         self.dropout = nn.Dropout(dropout)
+#         self.attn_dropout = nn.Dropout(dropout)
+
+#         # per-head learnable exponent
+#         self.p_raw = nn.Parameter(torch.zeros(heads))
+
+#         self.last_attn = None
+
+#     def forward(self, x):
+#         B, N, C = x.shape
+
+#         qkv = self.to_qkv(x).chunk(3, dim=-1)
+#         q, k, v = map(
+#             lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2),
+#             qkv
+#         )
+
+#         attn = (q @ k.transpose(-2, -1)) * self.scale
+
+#         p = 1 + F.softplus(self.p_raw).view(1, self.heads, 1, 1)
+
+#         attn = F.relu(attn) ** p / (N ** 0.5)
+#         attn = attn / (attn.sum(dim=-1, keepdim=True) + 1e-6)
+
+#         self.last_attn = attn.detach()
+
+#         attn = self.attn_dropout(attn)
+#         out = (attn @ v).transpose(1, 2).reshape(B, N, C)
+
+#         return self.dropout(self.proj(out))
+
 class Attention(nn.Module):
     def __init__(self, dim, heads, dropout=0.1):
         super().__init__()
@@ -93,6 +133,7 @@ class Attention(nn.Module):
         self.p_raw = nn.Parameter(torch.zeros(heads))
 
         self.last_attn = None
+        self.last_energy = None
 
     def forward(self, x):
         B, N, C = x.shape
@@ -103,20 +144,27 @@ class Attention(nn.Module):
             qkv
         )
 
-        attn = (q @ k.transpose(-2, -1)) * self.scale
+        sim = (q @ k.transpose(-2, -1)) * self.scale
 
+ 
         p = 1 + F.softplus(self.p_raw).view(1, self.heads, 1, 1)
 
-        attn = F.relu(attn) ** p / (N ** 0.5)
-        attn = attn / (attn.sum(dim=-1, keepdim=True) + 1e-6)
+
+        num = F.relu(sim) ** p
+
+        den = sim.abs().sum(dim=-1, keepdim=True) + 1e-6
+
+        attn = num / den
 
         self.last_attn = attn.detach()
+        self.last_energy = den.detach()
 
         attn = self.attn_dropout(attn)
         out = (attn @ v).transpose(1, 2).reshape(B, N, C)
 
         return self.dropout(self.proj(out))
-    
+
+
 
 class TransformerBlock(nn.Module):
     def __init__(self, dim, heads, mlp_dim, dropout=0.1):

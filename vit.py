@@ -76,6 +76,51 @@ class PatchEmbedding(nn.Module):
 #         return self.dropout(self.proj(out))
 
 
+# class Attention(nn.Module):
+#     def __init__(self, dim, heads, dropout=0.1):
+#         super().__init__()
+#         self.heads = heads
+#         self.scale = (dim // heads) ** -0.5
+
+#         self.to_qkv = nn.Linear(dim, dim * 3, bias=False)
+#         self.proj = nn.Linear(dim, dim)
+
+#         self.attn_dropout = nn.Dropout(dropout)
+#         self.dropout = nn.Dropout(dropout)
+
+#         self.last_attn = None
+
+#     def forward(self, x):
+#         B, N, C = x.shape
+
+#         # QKV
+#         qkv = self.to_qkv(x).chunk(3, dim=-1)
+#         q, k, v = map(
+#             lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2),
+#             qkv
+#         )
+
+#         # scaled dot-product attention
+#         attn = (q @ k.transpose(-2, -1)) * self.scale
+
+#         # ✅ СТАБИЛЬНЫЙ softmax
+#         attn = torch.softmax(attn, dim=-1)
+
+#         # dropout по attention
+#         attn = self.attn_dropout(attn)
+
+#         # сохраним для дебага/визуализации
+#         self.last_attn = attn.detach()
+
+#         # применение attention
+#         out = (attn @ v)
+
+#         # обратно собираем
+#         out = out.transpose(1, 2).reshape(B, N, C)
+
+#         return self.dropout(self.proj(out))
+
+
 class Attention(nn.Module):
     def __init__(self, dim, heads, dropout=0.1):
         super().__init__()
@@ -90,32 +135,38 @@ class Attention(nn.Module):
 
         self.last_attn = None
 
+    def manual_softmax(self, x, dim=-1):
+        x_max = x.max(dim=dim, keepdim=True)[0]
+        x = x - x_max
+
+        exp_x = torch.exp(x)
+
+ 
+        sum_exp_x = exp_x.sum(dim=dim, keepdim=True)
+
+        return exp_x / (sum_exp_x + 1e-9)
+
     def forward(self, x):
         B, N, C = x.shape
 
-        # QKV
+  
         qkv = self.to_qkv(x).chunk(3, dim=-1)
         q, k, v = map(
             lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2),
             qkv
         )
 
-        # scaled dot-product attention
         attn = (q @ k.transpose(-2, -1)) * self.scale
 
-        # ✅ СТАБИЛЬНЫЙ softmax
-        attn = torch.softmax(attn, dim=-1)
 
-        # dropout по attention
+        attn = self.manual_softmax(attn, dim=-1)
+
         attn = self.attn_dropout(attn)
 
-        # сохраним для дебага/визуализации
         self.last_attn = attn.detach()
 
-        # применение attention
-        out = (attn @ v)
+        out = attn @ v
 
-        # обратно собираем
         out = out.transpose(1, 2).reshape(B, N, C)
 
         return self.dropout(self.proj(out))
