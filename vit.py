@@ -39,36 +39,137 @@ class PatchEmbedding(nn.Module):
 # вычисляется матрица внимания размером 17×17
 # каждый токен получает взвешенную сумму информации от других
 
+# class Attention(nn.Module):
+#     def __init__(self, dim, heads, dropout=0.1):
+#         super().__init__()
+#         self.heads = heads
+#         self.scale = (dim // heads) ** -0.5
+#         self.to_qkv = nn.Linear(dim, dim * 3, bias=False)
+#         self.proj = nn.Linear(dim, dim)
+#         self.dropout = nn.Dropout(dropout)
+#         self.attn_dropout = nn.Dropout(dropout) 
+#         self.last_attn = None
+
+#     def manual_softmax(self, attn):
+#         """Чистая реализация softmax без PyTorch магии"""
+#         B, H, N, _ = attn.shape
+        
+#         exp_attn = torch.exp(attn)
+        
+#         row_sums = exp_attn.sum(dim=-1, keepdim=True)  # ← синхронизация ядер!
+  
+#         softmax_attn = exp_attn / row_sums
+#         return softmax_attn
+
+#     def forward(self, x):
+#         B, N, C = x.shape
+#         qkv = self.to_qkv(x).chunk(3, dim=-1)
+#         q, k, v = map(lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2), qkv)
+#         attn = (q @ k.transpose(-2, -1)) * self.scale
+        
+#         # ручной softmax
+#         attn = self.manual_softmax(attn)
+        
+#         self.last_attn = attn.detach()
+#         # attn = self.attn_dropout(attn) 
+#         out = (attn @ v).transpose(1, 2).reshape(B, N, C)
+#         return self.dropout(self.proj(out))
+
+
 class Attention(nn.Module):
     def __init__(self, dim, heads, dropout=0.1):
         super().__init__()
         self.heads = heads
         self.scale = (dim // heads) ** -0.5
+
         self.to_qkv = nn.Linear(dim, dim * 3, bias=False)
         self.proj = nn.Linear(dim, dim)
+
+        self.attn_dropout = nn.Dropout(dropout)
         self.dropout = nn.Dropout(dropout)
-        self.attn_dropout = nn.Dropout(dropout) 
 
         self.last_attn = None
-        
 
     def forward(self, x):
-        # B — размер батча
-        # N = 17 — число токенов
-        # C = 128 — размер эмбеддинга
         B, N, C = x.shape
-        qkv = self.to_qkv(x).chunk(3, dim=-1)
-        q, k, v = map(lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2), qkv)
-        attn = (q @ k.transpose(-2, -1)) * self.scale
-        attn = attn.softmax(dim=-1)
 
+        # QKV
+        qkv = self.to_qkv(x).chunk(3, dim=-1)
+        q, k, v = map(
+            lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2),
+            qkv
+        )
+
+        # scaled dot-product attention
+        attn = (q @ k.transpose(-2, -1)) * self.scale
+
+        # ✅ СТАБИЛЬНЫЙ softmax
+        attn = torch.softmax(attn, dim=-1)
+
+        # dropout по attention
+        attn = self.attn_dropout(attn)
+
+        # сохраним для дебага/визуализации
         self.last_attn = attn.detach()
-        
-        attn = self.attn_dropout(attn) 
-        out = (attn @ v).transpose(1, 2).reshape(B, N, C)
+
+        # применение attention
+        out = (attn @ v)
+
+        # обратно собираем
+        out = out.transpose(1, 2).reshape(B, N, C)
+
         return self.dropout(self.proj(out))
 
 
+# class Attention(nn.Module):
+#     def __init__(self, dim, heads, dropout=0.1):
+#         super().__init__()
+#         self.heads = heads
+#         self.scale = (dim // heads) ** -0.5
+
+#         self.to_qkv = nn.Linear(dim, dim * 3, bias=False)
+#         self.proj = nn.Linear(dim, dim)
+
+#         self.attn_dropout = nn.Dropout(dropout)
+#         self.dropout = nn.Dropout(dropout)
+
+#         self.last_attn = None
+
+#     def manual_softmax(self, x, dim=-1):
+#         x_max = x.max(dim=dim, keepdim=True)[0]
+#         x = x - x_max
+
+#         exp_x = torch.exp(x)
+
+ 
+#         sum_exp_x = exp_x.sum(dim=dim, keepdim=True)
+
+#         return exp_x / (sum_exp_x + 1e-9)
+
+#     def forward(self, x):
+#         B, N, C = x.shape
+
+  
+#         qkv = self.to_qkv(x).chunk(3, dim=-1)
+#         q, k, v = map(
+#             lambda t: t.reshape(B, N, self.heads, C // self.heads).transpose(1, 2),
+#             qkv
+#         )
+
+#         attn = (q @ k.transpose(-2, -1)) * self.scale
+
+
+#         attn = self.manual_softmax(attn, dim=-1)
+
+#         attn = self.attn_dropout(attn)
+
+#         self.last_attn = attn.detach()
+
+#         out = attn @ v
+
+#         out = out.transpose(1, 2).reshape(B, N, C)
+
+#         return self.dropout(self.proj(out))
 
 class TransformerBlock(nn.Module):
     def __init__(self, dim, heads, mlp_dim, dropout=0.1):
